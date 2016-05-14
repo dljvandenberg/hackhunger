@@ -55,5 +55,7 @@ for timeC in frange(-1, 1, time):
     with open('output/' + str(timeC) + '.csv', 'w') as csvfile:
         datawriter = csv.writer(csvfile, delimiter=',',
                     quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        i = 0;
         for prediction in predictions:
-            datawriter.writerow([xC, yC, prediction[0]])
+            datawriter.writerow([coords[i][0], coords[i][1], prediction[0]])
+            i += 1
