@@ -6,6 +6,7 @@ from keras.models import Sequential
 from keras.optimizers import Adam
 import csv
 
+from matplotlib.mlab import frange
 
 raw_data = []
 with open('data/yemen_mvam_normalized.csv', 'rb') as csvfile:
@@ -32,4 +33,27 @@ clf.add(Dense(input_dim=800, output_dim=1, activation='tanh'))
 
 clf.compile(optimizer=Adam(), loss='mean_squared_error')
 
-clf.fit(trainingData, trainingLabels, batch_size=64, nb_epoch=4, validation_data=(testData, testLabels), verbose=1)
+#clf.save_weights('models/version1')
+#clf.fit(trainingData, trainingLabels, batch_size=64, nb_epoch=4, validation_data=(testData, testLabels), verbose=1)
+
+clf.load_weights('models/version1')
+
+
+x = 0.01457496 # 10 kilometer
+y = 0.02627294 # 10 kilometer
+time = 0.05 # 1/5 month
+
+
+
+for timeC in frange(-1, 1, time):
+    coords = []
+    for xC in frange(-1, 1, x):
+        for yC in frange(-1, 1, y):
+            coords.append([xC, yC, timeC]);
+
+    predictions = clf.predict(numpy.asarray(coords), batch_size=1000)
+    with open('output/' + str(timeC) + '.csv', 'w') as csvfile:
+        datawriter = csv.writer(csvfile, delimiter=',',
+                    quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for prediction in predictions:
+            datawriter.writerow([xC, yC, prediction[0]])
